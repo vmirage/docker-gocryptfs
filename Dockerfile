@@ -1,5 +1,5 @@
 FROM golang:alpine AS builder
-ENV GOCRYPTFS_VERSION v2.0-beta3
+ENV GOCRYPTFS_VERSION v2.0-beta4
 
 RUN apk add bash gcc git libc-dev openssl-dev
 RUN go get -d github.com/rfjakob/gocryptfs
