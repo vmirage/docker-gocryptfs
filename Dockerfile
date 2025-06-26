@@ -1,20 +1,15 @@
 FROM golang:alpine AS builder
-ENV GOCRYPTFS_VERSION v2.5.1
+ENV GOCRYPTFS_VERSION v2.5.4
 
 RUN apk add bash gcc git libc-dev openssl-dev
-RUN go get -d github.com/rfjakob/gocryptfs
-WORKDIR src/github.com/rfjakob/gocryptfs
-
-RUN git checkout "$GOCRYPTFS_VERSION"
-RUN ./build.bash
-RUN mv "$(go env GOPATH)/bin/gocryptfs" /bin/gocryptfs
+RUN go install github.com/rfjakob/gocryptfs/v2@${GOCRYPTFS_VERSION}
 
 FROM alpine:latest
 
 ENV MOUNT_OPTIONS="-allow_other -nosyslog" \
     UNMOUNT_OPTIONS="-u -z"
 
-COPY --from=builder /bin/gocryptfs /usr/local/bin/gocryptfs
+COPY --from=builder /go/bin/gocryptfs /usr/local/bin/gocryptfs
 RUN apk --no-cache add fuse bash
 RUN echo user_allow_other >> /etc/fuse.conf
 

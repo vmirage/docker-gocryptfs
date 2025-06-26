@@ -38,11 +38,11 @@ for ENC_FOLDER in $ENC_FOLDERS; do
   DEC_FOLDER=`echo "$ENC_FOLDER" | sed "s|^${ENC_PATH}|${DEC_PATH}|g"`
   mkdir -p $DEC_FOLDER
 
-  if [ ! -z "$PASSWD" ]; then
-    gocryptfs $MOUNT_OPTIONS -fg -extpass 'printenv PASSWD' $ENC_FOLDER $DEC_FOLDER & pids+=($!)
-  else
-    gocryptfs $MOUNT_OPTIONS -fg $ENC_FOLDER $DEC_FOLDER & pids+=($!)
+  if [ ! -f "${ENC_FOLDER}/gocryptfs.conf" ]; then
+    gocryptfs -init -extpass 'printenv PASSWD' $ENC_FOLDER
   fi
+
+  gocryptfs $MOUNT_OPTIONS -fg -extpass 'printenv PASSWD' $ENC_FOLDER $DEC_FOLDER & pids+=($!)
 done
 wait "${pids[@]}"
 
